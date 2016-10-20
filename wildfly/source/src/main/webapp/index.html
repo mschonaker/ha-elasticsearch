@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html data-ng-app="WildflyApp">
+<head>
+<link rel="stylesheet" href="webjars/bootstrap/3.3.7/css/bootstrap.css">
+<script src="webjars/angularjs/1.5.8/angular.min.js"></script>
+<script src="webjars/angularjs/1.5.8/angular-route.min.js"></script>
+<script src="webjars/angularjs/1.5.8/angular-sanitize.min.js"></script>
+<script src="webjars/angular-ui-bootstrap/1.3.3/ui-bootstrap.min.js"></script>
+<script src="rest.js"></script>
+<script type="text/javascript">
+	REST.apiURL = 'api'
+</script>
+<script src="app.js"></script>
+</head>
+<body data-ng-cloak>
+  <nav class="navbar navbar-inverse" data-ng-controller="HeaderController">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+          <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">WildflyApp</a>
+      </div>
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+          <li data-ng-class="{ active: isActive('/users')}"><a href="#/users">Users</a></li>
+          <li data-ng-class="{ active: isActive('/status')}"><a href="#/status">Status</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="container">
+    <div class="col-md-12">
+      <div data-ng-view></div>
+    </div>
+  </div>
+</body>
+</html>

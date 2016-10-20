@@ -1,0 +1,41 @@
+version: '2'
+services:
+ 
+version: '2'
+services:
+  ##############################################################################
+  elasticsearch-a:
+    image: elasticsearch:5.1.1
+    command: -E discovery.zen.ping.unicast.hosts=elasticsearch-b,elasticsearch-c -E discovery.zen.minimum_master_nodes=2
+    ports:
+      - "10001:9200"
+    mem_limit: 500m
+  elasticsearch-b:
+    image: elasticsearch:5.1.1
+    command: -E discovery.zen.ping.unicast.hosts=elasticsearch-a,elasticsearch-c -E discovery.zen.minimum_master_nodes=2
+    ports:
+      - "10002:9200"
+    mem_limit: 500m
+  elasticsearch-c:
+    image: elasticsearch:5.1.1
+    command: -E discovery.zen.ping.unicast.hosts=elasticsearch-a,elasticsearch-b -E discovery.zen.minimum_master_nodes=2
+    ports:
+      - "10003:9200"
+    mem_limit: 500m
+  ##############################################################################
+  wildfly-a:
+    build: wildfly
+    environment:
+      - DOCKER_ENV=compose
+    mem_limit: 300m
+  wildfly-b:
+    build: wildfly
+    environment:
+      - DOCKER_ENV=compose
+    mem_limit: 300m
+  ##############################################################################
+  nginx:
+    build: nginx
+    ports:
+      - "80:80"
+    mem_limit: 100m
