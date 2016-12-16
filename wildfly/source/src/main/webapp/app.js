@@ -4,14 +4,14 @@ app.config([ '$routeProvider', function($routeProvider) {
 
 	$routeProvider
 
-	.when('/user/:username', {
-		templateUrl : 'templates/user.html',
-		controller : 'UserController'
+	.when('/message/:id', {
+		templateUrl : 'templates/message.html',
+		controller : 'MessageController'
 	})
 
-	.when('/users', {
-		templateUrl : 'templates/users.html',
-		controller : 'UsersController'
+	.when('/messages', {
+		templateUrl : 'templates/messages.html',
+		controller : 'MessagesController'
 	})
 
 	.when('/status', {
@@ -20,7 +20,7 @@ app.config([ '$routeProvider', function($routeProvider) {
 	})
 
 	.otherwise({
-		redirectTo : '/users'
+		redirectTo : '/messages'
 	});
 
 } ]);
@@ -31,45 +31,34 @@ app.controller('HeaderController', function($scope, $location) {
 
 });
 
-app.controller('UsersController', function($scope) {
+app.controller('MessagesController', function($scope) {
 
 	$scope.init = () => {
 		$scope.aux = null;
-		UsersResource.findAll({
-			'$callback' : function(status, request, entity) {
-				$scope.users = entity;
-				$scope.$apply();
-			}
-		})
+		$scope.results = MessagesResource.findAll();
 	}
 	
-	$scope.delete = function(username) {
-		UserResource.delete({
-			'username' : username, 
+	$scope.delete = function(id) {
+		MessageResource.delete({
+			'id' : id, 
 			'$callback' : $scope.init
 		})
 	}
 	
 	$scope.insert = function() {
-		UserResource.insert({
-			'$entity' : $scope.aux,
-			'$callback' : function(status, request, entity) {
-				if (status == 501)
-					alert("The user already exists: " + request.responseText)
-				else
-					$scope.init();
-			}
+		MessageResource.insert({
+			'$entity' : $scope.aux.message,
+			'$callback' : $scope.init
 		})
 	}
 
 	$scope.init();
-
 });
 
-app.controller('UserController', function($scope, $routeParams, $location) {
+app.controller('MessageController', function($scope, $routeParams, $location) {
 	
-	UserResource.find({
-		'username' : $routeParams.username,
+	MessageResource.find({
+		'id' : $routeParams.id,
 		'$callback' : function(status, request, entity) {
 			$scope.aux = entity;
 			$scope.$apply();
@@ -77,10 +66,11 @@ app.controller('UserController', function($scope, $routeParams, $location) {
 	})
 	
 	$scope.update = function() {
-		UserResource.update({
-			'$entity' : $scope.aux,
+		MessageResource.update({
+			'id' : $scope.aux.id,
+			'$entity' : $scope.aux.message,
 			'$callback' : function(status, request, entity) {
-				$location.path('/users');
+				$location.path('/messages');
 				$scope.$apply();
 			}
 		})
@@ -92,6 +82,11 @@ app.controller('StatusController', function($scope) {
 	
 	StatusResource.getHostname({ '$callback':  function(status, request, entity) {
 		$scope.status = request.responseText;
+		$scope.$apply();
+	}});
+	
+	StatusResource.getElasticSearchClusterInfo({ '$callback':  function(status, request, entity) {
+		$scope.clusterStatus = request.responseText;
 		$scope.$apply();
 	}});
 	

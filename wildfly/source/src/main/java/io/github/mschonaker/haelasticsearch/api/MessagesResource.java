@@ -1,28 +1,24 @@
 package io.github.mschonaker.haelasticsearch.api;
 
-import java.util.Date;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 
-import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 
 @Provider
-@Produces(MediaType.TEXT_PLAIN)
+@Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Path("messages")
 public class MessagesResource {
@@ -31,25 +27,21 @@ public class MessagesResource {
 	Client client;
 
 	@GET
-	public Results<Message> find(@QueryParam("q") @DefaultValue("*:*") String query) {
+	public Results<Message> findAll() {
 
-		SearchResponse response = client.prepareSearch("messages").setTypes("message")//
-				.setQuery(QueryBuilders.termQuery(null, query)).get();
+		SearchHits hits = client.prepareSearch("messages").setTypes("message")//
+				.setFetchSource(true).setQuery(QueryBuilders.matchAllQuery())//
+				.get().getHits();
 
-		SearchHits hits = response.getHits();
-
-		long totalHits = hits.getTotalHits();
 		Stream<SearchHit> stream = StreamSupport.stream(hits.spliterator(), true);
 
-		return new Results<Message>(totalHits, stream.map(MessagesResource::toMessage).collect(Collectors.toList()));
-
+		return new Results<Message>(hits.getTotalHits(),
+				stream.map(MessagesResource::toMessage).collect(Collectors.toList()));
 	}
 
 	private static Message toMessage(SearchHit doc) {
-		return new Message(//
-				doc.getId(), //
-				(Date) doc.field("date").getValue(), //
-				(String) doc.field("message").getValue());
+		Message message = Mapper.from(doc.getSource());
+		message.setId(doc.getId());
+		return message;
 	}
-
 }

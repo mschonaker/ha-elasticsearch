@@ -1,0 +1,8 @@
+<div class="well">
+  <form class="form-inline">
+    <div class="form-group">
+      <input type="text" class="form-control" id="date" placeholder="Date..." value="{{aux.date | date:&quot;MM/dd/yyyy 'at' h:mma&quot;}}" disabled> <input type="text" class="form-control" id="message" placeholder="Message..." data-ng-model="aux.message">
+      <button type="submit" class="btn btn-primary" data-ng-click="update()">Save</button>
+    </div>
+  </form>
+</div>

@@ -8,15 +8,6 @@ public class Message {
 	private Date date;
 	private String message;
 
-	public Message(String id, Date date, String message) {
-		this.id = id;
-		this.date = date;
-		this.message = message;
-	}
-
-	public Message() {
-	}
-
 	public String getId() {
 		return id;
 	}

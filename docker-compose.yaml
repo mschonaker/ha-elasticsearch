@@ -8,19 +8,22 @@ services:
     image: elasticsearch:5.1.1
     command: -E discovery.zen.ping.unicast.hosts=elasticsearch-b,elasticsearch-c -E discovery.zen.minimum_master_nodes=2
     ports:
-      - "10001:9200"
+      - "11001:9200"
+      - "10001:9300"
     mem_limit: 500m
   elasticsearch-b:
     image: elasticsearch:5.1.1
     command: -E discovery.zen.ping.unicast.hosts=elasticsearch-a,elasticsearch-c -E discovery.zen.minimum_master_nodes=2
     ports:
-      - "10002:9200"
+      - "11002:9200"    
+      - "10002:9300"
     mem_limit: 500m
   elasticsearch-c:
     image: elasticsearch:5.1.1
     command: -E discovery.zen.ping.unicast.hosts=elasticsearch-a,elasticsearch-b -E discovery.zen.minimum_master_nodes=2
     ports:
-      - "10003:9200"
+      - "11003:9200"    
+      - "10003:9300"
     mem_limit: 500m
   ##############################################################################
   wildfly-a:

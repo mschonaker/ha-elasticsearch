@@ -1,10 +1,5 @@
 package io.github.mschonaker.haelasticsearch.api;
 
-import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
-
-import java.io.IOException;
-import java.util.Date;
-
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
@@ -19,11 +14,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
 
 import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.action.support.WriteRequest.RefreshPolicy;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.common.xcontent.XContentBuilder;
 
 @Provider
-@Produces(MediaType.TEXT_PLAIN)
+@Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @Path("message")
 public class MessageResource {
@@ -33,58 +28,39 @@ public class MessageResource {
 
 	@GET
 	@Path("{id}")
-	public Message get(@PathParam("id") @NotNull String id) {
-		GetResponse response = client.prepareGet("messages", "message", id).get();
+	public Message find(@PathParam("id") @NotNull String id) {
 
-		Message message = new Message();
+		GetResponse response = client.prepareGet("messages", "message", id)//
+				.setFetchSource(true)//
+				.get();
+
+		Message message = Mapper.from(response.getSourceAsMap());
 		message.setId(response.getId());
-		message.setDate((Date) response.getField("date").getValue());
-		message.setMessage((String) response.getField("message").getValue());
-
 		return message;
 	}
 
-	@POST
-	public String post(String message) {
-
-		XContentBuilder document = null;
-		try {
-
-			document = jsonBuilder().startObject()//
-					.field("date", new Date())//
-					.field("message", message)//
-					.endObject();
-
-		} catch (IOException e) {
-			throw new IllegalStateException(e);
-		}
-
-		return client.prepareIndex("messages", "message").setSource(document).get().getId();
+	@PUT
+	@Produces(MediaType.TEXT_PLAIN)
+	public String insert(@NotNull String message) {
+		return client.prepareIndex("messages", "message")//
+				.setSource(Mapper.toSource(message)).setRefreshPolicy(RefreshPolicy.WAIT_UNTIL)//
+				.get().getId();
 	}
 
-	@PUT
+	@POST
 	@Path("{id}")
-	public String put(@PathParam("id") @NotNull String id, String message) {
+	public void update(@PathParam("id") @NotNull String id, String message) {
 
-		XContentBuilder document = null;
-		try {
-
-			document = jsonBuilder().startObject()//
-					.field("date", new Date())//
-					.field("message", message)//
-					.endObject();
-
-		} catch (IOException e) {
-			throw new IllegalStateException(e);
-		}
-
-		return client.prepareIndex("messages", "message", id).setSource(document).get().getId();
+		client.prepareIndex("messages", "message", id)//
+				.setSource(Mapper.toSource(message)).setRefreshPolicy(RefreshPolicy.WAIT_UNTIL)//
+				.execute();
 	}
 
 	@DELETE
 	@Path("{id}")
 	public void delete(@PathParam("id") @NotNull String id) {
 
-		client.prepareDelete("messages", "message", id).get();
+		client.prepareDelete("messages", "message", id)//
+				.execute();
 	}
 }

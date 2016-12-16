@@ -26,6 +26,15 @@ public class Application extends javax.ws.rs.core.Application {
 				.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("elasticsearch-a"), 9300))
 				.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("elasticsearch-b"), 9300))
 				.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName("elasticsearch-c"), 9300));
+		// .addTransportAddress(new
+		// InetSocketTransportAddress(InetAddress.getByName("localhost"),
+		// 10001))
+		// .addTransportAddress(new
+		// InetSocketTransportAddress(InetAddress.getByName("localhost"),
+		// 10002))
+		// .addTransportAddress(new
+		// InetSocketTransportAddress(InetAddress.getByName("localhost"),
+		// 10003));
 	}
 
 	@PreDestroy
