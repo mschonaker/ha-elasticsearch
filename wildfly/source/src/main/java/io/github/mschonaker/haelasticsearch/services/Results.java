@@ -1,4 +1,4 @@
-package io.github.mschonaker.haelasticsearch.api;
+package io.github.mschonaker.haelasticsearch.services;
 
 import java.util.List;
 

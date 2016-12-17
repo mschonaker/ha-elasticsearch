@@ -1,4 +1,4 @@
-package io.github.mschonaker.haelasticsearch.props;
+package io.github.mschonaker.haelasticsearch.util.props;
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.ElementType.FIELD;

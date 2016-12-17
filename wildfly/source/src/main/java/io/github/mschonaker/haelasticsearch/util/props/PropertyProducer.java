@@ -1,4 +1,4 @@
-package io.github.mschonaker.haelasticsearch.props;
+package io.github.mschonaker.haelasticsearch.util.props;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

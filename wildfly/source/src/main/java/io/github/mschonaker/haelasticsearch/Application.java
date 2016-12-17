@@ -1,7 +1,6 @@
 package io.github.mschonaker.haelasticsearch;
 
 import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
 import java.util.Arrays;
 
 import javax.annotation.PreDestroy;
@@ -15,7 +14,9 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
-import io.github.mschonaker.haelasticsearch.props.Property;
+import io.github.mschonaker.haelasticsearch.services.MessagesService;
+import io.github.mschonaker.haelasticsearch.services.impl.MessagesServiceImpl;
+import io.github.mschonaker.haelasticsearch.util.props.Property;
 
 @ApplicationPath("/api")
 public class Application extends javax.ws.rs.core.Application {
@@ -28,7 +29,7 @@ public class Application extends javax.ws.rs.core.Application {
 
 	@Produces
 	@ApplicationScoped
-	public Client createClient() throws UnknownHostException {
+	public Client createClient() {
 
 		assert elasticsearchAddresses != null;
 
@@ -41,6 +42,12 @@ public class Application extends javax.ws.rs.core.Application {
 				.forEach(client::addTransportAddress);
 
 		return client;
+	}
+
+	@Produces
+	@ApplicationScoped
+	public MessagesService createMessagesService() {
+		return new MessagesServiceImpl(createClient());
 	}
 
 	@PreDestroy

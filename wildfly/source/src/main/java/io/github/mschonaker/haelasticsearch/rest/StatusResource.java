@@ -1,4 +1,4 @@
-package io.github.mschonaker.haelasticsearch.api;
+package io.github.mschonaker.haelasticsearch.rest;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

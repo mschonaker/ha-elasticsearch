@@ -32,63 +32,62 @@ app.controller('HeaderController', function($scope, $location) {
 });
 
 app.controller('MessagesController', function($scope) {
-
-	$scope.init = () => {
-		$scope.aux = null;
-		$scope.results = MessagesResource.findAll();
-	}
 	
-	$scope.delete = function(id) {
-		MessageResource.delete({
-			'id' : id, 
-			'$callback' : $scope.init
-		})
-	}
+	$scope.callback = (status, request, entity) => {
+		
+		$scope.message = null;
+		$scope.results = entity;
+		$scope.$apply();
+		
+	};
 	
-	$scope.insert = function() {
-		MessageResource.insert({
-			'$entity' : $scope.aux.message,
-			'$callback' : $scope.init
-		})
-	}
+	$scope.findAll = () =>  MessagesResource.findAll({'$callback' : $scope.callback});
+	
+	$scope.delete = (id) => MessagesResource.delete({
+			'id' : id,
+			'$callback' : $scope.callback
+	});
+	
+	$scope.insert = () => MessagesResource.insert({
+			'$entity' : $scope.message,
+			'$callback' : $scope.callback
+	});
+	
+	$scope.$on('$locationChangeSuccess', $scope.findAll);
 
-	$scope.init();
+	$scope.findAll();
 });
 
 app.controller('MessageController', function($scope, $routeParams, $location) {
 	
 	MessageResource.find({
 		'id' : $routeParams.id,
-		'$callback' : function(status, request, entity) {
+		'$callback' : (status, request, entity) => {
 			$scope.aux = entity;
 			$scope.$apply();
 		}
-	})
+	});
 	
-	$scope.update = function() {
-		MessageResource.update({
-			'id' : $scope.aux.id,
-			'$entity' : $scope.aux.message,
-			'$callback' : function(status, request, entity) {
+	$scope.update = () => MessageResource.update({
+			'$entity' : $scope.aux,
+			'$callback' : () => { 
 				$location.path('/messages');
 				$scope.$apply();
 			}
-		})
-	}
+	});
 	
 });
 
 app.controller('StatusController', function($scope) {
 	
-	StatusResource.getHostname({ '$callback':  function(status, request, entity) {
+	StatusResource.getHostname({ '$callback': (status, request, entity) => {
 		$scope.status = request.responseText;
 		$scope.$apply();
 	}});
 	
-	StatusResource.getElasticSearchClusterInfo({ '$callback':  function(status, request, entity) {
+	StatusResource.getElasticSearchClusterInfo({ '$callback': (status, request, entity) => {
 		$scope.clusterStatus = request.responseText;
 		$scope.$apply();
 	}});
 	
 });
-

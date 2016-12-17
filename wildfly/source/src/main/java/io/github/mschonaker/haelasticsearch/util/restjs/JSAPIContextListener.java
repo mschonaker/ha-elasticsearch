@@ -1,4 +1,4 @@
-package io.github.mschonaker.haelasticsearch.restjs;
+package io.github.mschonaker.haelasticsearch.util.restjs;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;

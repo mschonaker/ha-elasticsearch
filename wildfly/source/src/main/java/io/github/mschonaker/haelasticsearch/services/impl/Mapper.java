@@ -1,4 +1,4 @@
-package io.github.mschonaker.haelasticsearch.api;
+package io.github.mschonaker.haelasticsearch.services.impl;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 
@@ -10,6 +10,8 @@ import java.util.Optional;
 import javax.xml.bind.DatatypeConverter;
 
 import org.elasticsearch.common.xcontent.XContentBuilder;
+
+import io.github.mschonaker.haelasticsearch.services.Message;
 
 class Mapper {
 
