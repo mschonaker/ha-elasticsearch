@@ -28,13 +28,9 @@ services:
   ##############################################################################
   wildfly-a:
     build: wildfly
-    environment:
-      - DOCKER_ENV=compose
     mem_limit: 300m
   wildfly-b:
     build: wildfly
-    environment:
-      - DOCKER_ENV=compose
     mem_limit: 300m
   ##############################################################################
   nginx:

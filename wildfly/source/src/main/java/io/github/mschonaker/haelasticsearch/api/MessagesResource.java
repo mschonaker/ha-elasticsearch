@@ -1,7 +1,7 @@
 package io.github.mschonaker.haelasticsearch.api;
 
+import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import javax.inject.Inject;
@@ -29,14 +29,24 @@ public class MessagesResource {
 	@GET
 	public Results<Message> findAll() {
 
-		SearchHits hits = client.prepareSearch("messages").setTypes("message")//
-				.setFetchSource(true).setQuery(QueryBuilders.matchAllQuery())//
-				.get().getHits();
+		long total = 0;
+		List<Message> items = null;
 
-		Stream<SearchHit> stream = StreamSupport.stream(hits.spliterator(), true);
+		try {
 
-		return new Results<Message>(hits.getTotalHits(),
-				stream.map(MessagesResource::toMessage).collect(Collectors.toList()));
+			SearchHits hits = client.prepareSearch("messages").setTypes("message")//
+					.setFetchSource(true).setQuery(QueryBuilders.matchAllQuery())//
+					.get().getHits();
+
+			total = hits.getTotalHits();
+			items = StreamSupport.stream(hits.spliterator(), true)//
+					.map(MessagesResource::toMessage)//
+					.collect(Collectors.toList());
+
+		} catch (Exception e) {
+		}
+
+		return new Results<Message>(total, items);
 	}
 
 	private static Message toMessage(SearchHit doc) {
